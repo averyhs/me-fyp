@@ -18,11 +18,11 @@ from cmath import pi
 class MycoCellModel(SimulatedCell):
     @staticmethod
     def random_sequences(sequence):
-        return dict(elongation_rate=sequence.normal(1.5, 0.25))  # µm·h⁻¹
+        return dict(elongation_rate=sequence.normal(0.5, 0.09))  # µm·h⁻¹ (mean & std?)
 
     def birth(self, parent=None, ts=None) -> None:
         self.elongation_rate = next(self.random.elongation_rate)
-        self.division_time = h_to_s(1.0)
+        self.division_time = h_to_s(3)
 
     def grow(self, ts) -> None:
         self.length += self.elongation_rate * ts.hours

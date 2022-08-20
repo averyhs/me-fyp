@@ -6,10 +6,10 @@ python -m cellsium simulate \
     -t GroundTruthOnlyCompleteCells=False \
     -t GroundTruthOnlyCompleteCellsInImages=False \
     -t ChipmunkPlacementRadius=0.0 \
-    -t NewCellLength1Mean=2.5 \
-    -t NewCellLength1Std=0.15 \
-    -t NewCellLength2Mean=10 \
-    -t NewCellLength2Std=3 \
+    -t NewCellLength1Mean=9 \
+    -t NewCellLength1Std=1.3 \
+    -t NewCellLength2Mean=2.5 \
+    -t NewCellLength2Std=0.15 \
     -t NewCellLengthAbsoluteMax=15 \
     -t NewCellLengthAbsoluteMin=1 \
     -t NewCellWidthMean=0.5 \
