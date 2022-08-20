@@ -13,6 +13,7 @@ from cellsium.model.agent import (
 from typing import Any, Iterable, Mapping, Optional
 from random import randint
 from math import cos, sin
+from cmath import pi
 
 class MycoCellModel(SimulatedCell):
     @staticmethod
@@ -39,15 +40,15 @@ class MycoCellModel(SimulatedCell):
 
         # My division behavior
         # --------------------
-        division_angle = 0 # randint(-45,45)
+        division_angle = randint(-45,45) * pi/180
         x, y = self.position
         alpha = self.angle
         length = self.length
 
         offspring_a, offspring_b = self.copy(), self.copy()
 
-        offspring_a.position = [float(x-(length/4)*cos(alpha)), float(y-(length/4)*sin(alpha))]
-        offspring_b.position = [float(x+(length/4)*cos(alpha-division_angle)), float(y+(length/4)*sin(alpha-division_angle))]
+        offspring_a.position = [float(x-(length/4)*cos(alpha+division_angle)), float(y-(length/4)*sin(alpha+division_angle))]
+        offspring_b.position = [float(x+(length/4)*cos(alpha)), float(y+(length/4)*sin(alpha))]
         offspring_a.angle = self.angle
         offspring_b.angle = self.angle + division_angle
         # --------------------
