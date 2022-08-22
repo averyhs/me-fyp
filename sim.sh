@@ -5,6 +5,8 @@ python -m cellsium simulate \
     -t SimulationOutputInterval=0.5 \
     -t GroundTruthOnlyCompleteCells=False \
     -t GroundTruthOnlyCompleteCellsInImages=False \
+    -t NewCellCount=3 \
+    -t NewCellRadiusFromCenter=20.0 \
     -t ChipmunkPlacementRadius=0.0 \
     -t NewCellLength1Mean=9 \
     -t NewCellLength1Std=1.3 \
@@ -18,6 +20,7 @@ python -m cellsium simulate \
     -t NewCellWidthAbsoluteMin=0.1 \
     -t LuminanceBackground=0.35 \
     -t LuminanceCell=0.2 \
+    -t Seed=9 \
     -o simulate \
     --Output GenericMaskOutput \
     -c mycomodel.py:Cell \
