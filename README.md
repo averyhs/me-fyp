@@ -4,3 +4,11 @@ Mycobacterial colony segmentation, alignment and characterisation from time-laps
 ============================================================================================
 
 
+Directory structure
+-------------------
+**sim_gt**: Simulation for ground truth data.  
+- Definition of custom cell model
+- Scripts to run simulation and create videos
+
+**preprocessing**: Image preprocessing (alignment, background removal)
+

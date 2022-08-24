@@ -7,7 +7,7 @@ python -m cellsium simulate \
     -t GroundTruthOnlyCompleteCellsInImages=False \
     -t NewCellCount=3 \
     -t NewCellRadiusFromCenter=20.0 \
-    -t ChipmunkPlacementRadius=0.0 \
+    -t ChipmunkPlacementRadius=0.0001 \
     -t NewCellLength1Mean=3.5 \
     -t NewCellLength1Std=0.2 \
     -t NewCellLength2Mean=2.5 \
