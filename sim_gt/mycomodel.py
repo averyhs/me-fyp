@@ -17,13 +17,22 @@ from cmath import pi
 import numpy as np
 
 class MycoCellModel(SimulatedCell):
+    # Class variables to be adjusted:
+    # (TODO: should be adjusted from somewhere more accessible)
+    div_time_mean = 3 # mean division time (hr)
+    div_time_std = 0.3 # standard deviation of division time (hr)
+    drug_intro_time = 6 # time (hr) at which drug is introduced
+    drug_effect_tps = [0, 0.5, 1] # time points at which drug affects cells after drug intro
+    drug_effect_prob = 0.3 # probability of a cell being affected by drug
+    long_div_time = 10 # longer div time mean (hr) due to drug
+
     @staticmethod
     def random_sequences(sequence):
         return dict(elongation_rate=sequence.normal(0.5, 0.09))  # µm·h⁻¹ (mean & std?)
 
     def birth(self, parent=None, ts=None) -> None:
         self.elongation_rate = next(self.random.elongation_rate)
-        self.division_time = h_to_s(np.random.normal(3,0.3)) # TODO: add div_time_mean and div_time_std as tunable vars
+        self.division_time = h_to_s(np.random.normal(self.div_time_mean, self.div_time_std))
 
     def grow(self, ts) -> None:
         self.length += self.elongation_rate * ts.hours
@@ -31,16 +40,10 @@ class MycoCellModel(SimulatedCell):
         # Drug perturbation
         # -----------------
         # (this might not be the best place to do this, but it runs every timestep so it will do for now)
-        # (TODO: move tunable vars out of fcn)
         
-        # Variables to select
-        drug_intro_time = 6 # time (in hours) at which drug is introduced
-        drug_effect_tps = [0, 0.5, 1] # time points (in hours) at which drug affects cells after drug intro
-        percent_affected = 30 # percent of cells told to stop dividing at every time point (incl non-dividing cells) 
-        
-        if ts.time in [h_to_s(drug_intro_time + x) for x in drug_effect_tps]:
-            if randint(1,100) <= percent_affected :
-                self.division_time = h_to_s(100)
+        if ts.time in [h_to_s(self.drug_intro_time + x) for x in self.drug_effect_tps]:
+            if np.random.uniform() <= self.drug_effect_prob:
+                self.division_time = h_to_s(np.random.normal(self.long_div_time,0.3))
         # -----------------
 
         if ts.time > (self.birth_time + self.division_time):
