@@ -27,6 +27,21 @@ class MycoCellModel(SimulatedCell):
     def grow(self, ts) -> None:
         self.length += self.elongation_rate * ts.hours
 
+        # Drug perturbation
+        # -----------------
+        # (this might not be the best place to do this, but it runs every timestep so it will do for now)
+        # (TODO: move tunable vars out of fcn)
+        
+        # Variables to select
+        drug_intro_time = 6 # time (in hours) at which drug is introduced
+        drug_effect_tps = [0, 0.5, 1] # time points (in hours) at which drug affects cells after drug intro
+        percent_affected = 30 # percent of cells told to stop dividing at every time point (incl non-dividing cells) 
+        
+        if ts.time in [h_to_s(drug_intro_time + x) for x in drug_effect_tps]:
+            if randint(1,100) <= percent_affected :
+                self.division_time = h_to_s(100)
+        # -----------------
+
         if ts.time > (self.birth_time + self.division_time):
             offspring_a, offspring_b = self.divide(ts)
             offspring_a.length = offspring_b.length = self.length / 2
@@ -38,8 +53,8 @@ class MycoCellModel(SimulatedCell):
         :return: None
         """
 
-        # My division behavior
-        # --------------------
+        # 'v-snap' division behavior
+        # --------------------------
         division_angle = randint(-45,45) * pi/180
         x, y = self.position
         alpha = self.angle
@@ -51,7 +66,7 @@ class MycoCellModel(SimulatedCell):
         offspring_b.position = [float(x+(length/4)*cos(alpha)), float(y+(length/4)*sin(alpha))]
         offspring_a.angle = self.angle
         offspring_b.angle = self.angle + division_angle
-        # --------------------
+        # --------------------------
 
         if isinstance(self, WithLineage):
             offspring_a.parent_id = offspring_b.parent_id = self.id_
