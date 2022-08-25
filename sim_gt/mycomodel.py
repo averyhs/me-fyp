@@ -1,4 +1,4 @@
-from cellsium.model import assemble_cell, SimulatedCell, h_to_s, RodShaped, BentRod
+from cellsium.model import assemble_cell, SimulatedCell, h_to_s, s_to_h, RodShaped, BentRod
 from cellsium.simulation.simulator import Timestep
 from cellsium.model.agent import (
     Copyable,
@@ -23,16 +23,23 @@ class MycoCellModel(SimulatedCell):
     div_time_std = 0.3 # standard deviation of division time (hr)
     drug_intro_time = 6 # time (hr) at which drug is introduced
     drug_effect_tps = [0, 0.5, 1] # time points at which drug affects cells after drug intro
-    drug_effect_prob = 0.3 # probability of a cell being affected by drug
+    drug_effect_prob = 0.1 # probability of a cell being affected by drug at each time pt (including already affected cells)
     long_div_time = 10 # longer div time mean (hr) due to drug
 
     @staticmethod
     def random_sequences(sequence):
-        return dict(elongation_rate=sequence.normal(0.5, 0.09))  # µm·h⁻¹ (mean & std?)
+        return dict(elongation_rate=sequence.normal(0.5, 0.09))  # µm·h⁻¹
 
     def birth(self, parent=None, ts=None) -> None:
         self.elongation_rate = next(self.random.elongation_rate)
-        self.division_time = h_to_s(np.random.normal(self.div_time_mean, self.div_time_std))
+        
+        # Inherit drug effects (actually inheriting division_time)
+        # --------------------
+        if parent is None:
+            self.division_time = h_to_s(np.random.normal(self.div_time_mean, self.div_time_std))
+        else:
+            self.division_time = h_to_s(np.random.normal(s_to_h(parent.division_time), self.div_time_std))
+        # --------------------
 
     def grow(self, ts) -> None:
         self.length += self.elongation_rate * ts.hours
@@ -43,7 +50,7 @@ class MycoCellModel(SimulatedCell):
         
         if ts.time in [h_to_s(self.drug_intro_time + x) for x in self.drug_effect_tps]:
             if np.random.uniform() <= self.drug_effect_prob:
-                self.division_time = h_to_s(np.random.normal(self.long_div_time,0.3))
+                self.division_time = h_to_s(np.random.normal(self.long_div_time, self.div_time_std))
         # -----------------
 
         if ts.time > (self.birth_time + self.division_time):
@@ -95,4 +102,4 @@ class MycoCellModel(SimulatedCell):
 
 
 
-Cell = assemble_cell(MycoCellModel, BentRod)
+Cell = assemble_cell(MycoCellModel, RodShaped)
