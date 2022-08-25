@@ -1,4 +1,4 @@
-from cellsium.model import assemble_cell, SimulatedCell, h_to_s, RodShaped
+from cellsium.model import assemble_cell, SimulatedCell, h_to_s, RodShaped, BentRod
 from cellsium.simulation.simulator import Timestep
 from cellsium.model.agent import (
     Copyable,
@@ -95,4 +95,4 @@ class MycoCellModel(SimulatedCell):
 
 
 
-Cell = assemble_cell(MycoCellModel, RodShaped)
+Cell = assemble_cell(MycoCellModel, BentRod)
