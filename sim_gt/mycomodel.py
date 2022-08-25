@@ -14,6 +14,7 @@ from typing import Any, Iterable, Mapping, Optional
 from random import randint
 from math import cos, sin
 from cmath import pi
+import numpy as np
 
 class MycoCellModel(SimulatedCell):
     @staticmethod
@@ -22,7 +23,7 @@ class MycoCellModel(SimulatedCell):
 
     def birth(self, parent=None, ts=None) -> None:
         self.elongation_rate = next(self.random.elongation_rate)
-        self.division_time = h_to_s(3)
+        self.division_time = h_to_s(np.random.normal(3,0.3)) # TODO: add div_time_mean and div_time_std as tunable vars
 
     def grow(self, ts) -> None:
         self.length += self.elongation_rate * ts.hours
