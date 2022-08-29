@@ -28,7 +28,13 @@ class MycoCellModel(SimulatedCell):
 
     @staticmethod
     def random_sequences(sequence):
-        return dict(elongation_rate=sequence.normal(0.5, 0.09))  # µm·h⁻¹
+        return dict(
+            elongation_rate=sequence.normal(0.75, 0.09), # µm·h⁻¹
+            div_time=sequence.normal(MycoCellModel.div_time_mean, MycoCellModel.div_time_std),
+            long_div_time=sequence.normal(MycoCellModel.long_div_time, MycoCellModel.div_time_std),
+            div_time_wiggle=sequence.normal(0, MycoCellModel.div_time_std),
+            drug_dice=sequence.uniform()
+            )
 
     def birth(self, parent=None, ts=None) -> None:
         self.elongation_rate = next(self.random.elongation_rate)
@@ -36,9 +42,12 @@ class MycoCellModel(SimulatedCell):
         # Inherit drug effects (actually inheriting division_time)
         # --------------------
         if parent is None:
-            self.division_time = h_to_s(np.random.normal(self.div_time_mean, self.div_time_std))
+            self.division_time = h_to_s(next(self.random.div_time))
         else:
-            self.division_time = h_to_s(np.random.normal(s_to_h(parent.division_time), self.div_time_std))
+            if round(ts.time)%7 <= 3: # mix it up sometimes (takes long)
+                self.division_time = parent.division_time + h_to_s(next(self.random.div_time_wiggle))
+            else:              
+                self.division_time = parent.division_time
         # --------------------
 
     def grow(self, ts) -> None:
@@ -49,8 +58,8 @@ class MycoCellModel(SimulatedCell):
         # (this might not be the best place to do this, but it runs every timestep so it will do for now)
         
         if ts.time in [h_to_s(self.drug_intro_time + x) for x in self.drug_effect_tps]:
-            if np.random.uniform() <= self.drug_effect_prob:
-                self.division_time = h_to_s(np.random.normal(self.long_div_time, self.div_time_std))
+            if next(self.random.drug_dice) <= self.drug_effect_prob:
+                self.division_time = h_to_s(next(self.random.long_div_time))
         # -----------------
 
         if ts.time > (self.birth_time + self.division_time):
