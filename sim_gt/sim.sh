@@ -1,8 +1,10 @@
 #!/bin/zsh
 
 python -m cellsium simulate \
+    -t Height=60.0 \
+    -t Width=60.0 \
     \
-    -t SimulationDuration=13.0 \
+    -t SimulationDuration=1.0 \
     -t SimulationOutputInterval=0.5 \
     \
     -t GroundTruthOnlyCompleteCells=False \
@@ -35,7 +37,7 @@ python -m cellsium simulate \
     -t LuminanceBackground=0.35 \
     -t LuminanceCell=0.2 \
     \
-    -t Seed=9 \
+    -t Seed=6 \
     \
     -o simulate \
     --Output GenericMaskOutput \
