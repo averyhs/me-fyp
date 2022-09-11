@@ -1,5 +1,6 @@
 import numpy as np
-import skimage
+from skimage import io
+from skimage import exposure
 import os
 
 # Specify directories
@@ -12,12 +13,15 @@ pngs = list(os.path.join(pngpath,f) for f in os.listdir(pngpath) if f.endswith('
 pngs.sort()
 
 # Get required shape of np array
-imshape = np.shape(skimage.io.imread(pngs[0]))
+sample_img = io.imread(pngs[0])
+imshape = np.shape(sample_img)
 
 # Read png images and add to numpy stack
-imstack = np.empty([len(pngs), imshape[0], imshape[1]])
+imstack = np.empty([len(pngs), imshape[0], imshape[1]], dtype=sample_img.dtype)
 for n in range(len(pngs)):
-    imstack[n,:,:] = skimage.io.imread(pngs[n])
+    img = io.imread(pngs[n])
+    img_rescaled = exposure.adjust_log(img)
+    imstack[n,:,:] = img
 
 # np array to tif
-skimage.io.imsave('images.tif', imstack.astype('uint16'))
+io.imsave('images.tif', imstack)
